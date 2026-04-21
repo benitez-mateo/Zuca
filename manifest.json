@@ -1,0 +1,25 @@
+{
+  "name": "Zuca – Pastelería Artesanal",
+  "short_name": "Zuca",
+  "description": "Lista de precios y recetas para Zuca Pastelería Artesanal",
+  "start_url": "./Lista_zuca.html",
+  "display": "standalone",
+  "background_color": "#1b8f8f",
+  "theme_color": "#1b8f8f",
+  "orientation": "portrait",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
