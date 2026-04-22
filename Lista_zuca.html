@@ -780,7 +780,7 @@ i.unidadUso
 })
 
 let unit=costo/(r.rendimiento||1)
-r.precioVenta=unit*1.54
+r.precioVenta=unit*(r.margenMultiplicador||1.54)
 })
 
 combos.forEach(c=>{
@@ -1010,7 +1010,7 @@ maxUnit.innerHTML = "Margen 200%"
 
 motor.style.display = "block"
 
-window.motorValores = {cons, rec, prem, max}
+window.motorValores = {cons, rec, prem, max, _unitFinal: unitFinal}
 }
 
 function selectPrecio(tipo){
@@ -1088,6 +1088,7 @@ categoria:recCategoria.value,
 rendimiento:rend,
 ingredientes:[...recetaTemp],
 precioVenta:precioSeleccionado||null,
+margenMultiplicador:precioSeleccionado && window.motorValores ? (precioSeleccionado / window.motorValores._unitFinal) : 1.54,
 precioFijo:false
 }
 
