@@ -556,7 +556,16 @@ gap:6px;
 <option>Otros</option>
 </select>
 
-<input id="recRendimiento" type="number" placeholder="Rendimiento (ej: 12 unidades)">
+<div class="row">
+<input id="recRendimiento" type="number" placeholder="Rendimiento (ej: 12)">
+<select id="recRendimientoUnidad">
+<option value="unidades">Unidades</option>
+<option value="g">Gramos (g)</option>
+<option value="kg">Kilogramos (kg)</option>
+<option value="ml">Mililitros (ml)</option>
+<option value="lt">Litros (lt)</option>
+</select>
+</div>
 
 <h4>Embalaje</h4>
 
@@ -732,7 +741,12 @@ return coloresCategoria[cat] || "#f8fefe"
 
 function setEditMode(section, isEditing){
 const card = document.getElementById(section)
-const banner = document.getElementById('banner' + section.charAt(0).toUpperCase() + section.slice(1))
+const bannerMap = {
+'ingredientes': 'bannerIng',
+'recetas': 'bannerRec',
+'combos': 'bannerCombo'
+}
+const banner = document.getElementById(bannerMap[section])
 if(!card || !banner) return
 if(isEditing){
 card.classList.add('editing-mode')
@@ -952,6 +966,7 @@ return
 
 let costoIngredientes = calcularCosto()
 let rend = parseFloat(recRendimiento.value || 1)
+let rendUnidad = document.getElementById('recRendimientoUnidad').value || 'unidades'
 
 /* ================= EMBALAJE ================= */
 
@@ -997,7 +1012,7 @@ Embalaje: $${costoEmbalaje.toFixed(2)}<br>
 Total: $${costo.toFixed(2)}
 `
 
-costoUnitario.innerHTML = "Costo unitario final: $" + unitFinal.toFixed(2)
+costoUnitario.innerHTML = `Costo por ${rendUnidad === 'unidades' ? 'unidad' : rendUnidad}: $${unitFinal.toFixed(2)}`
 
 consPrecio.innerHTML = "$" + cons.toFixed(2)
 consUnit.innerHTML = "Margen 25%"
@@ -1086,6 +1101,7 @@ let nueva={
 nombre:recNombre.value.trim(),
 categoria:recCategoria.value,
 rendimiento:rend,
+rendimientoUnidad:document.getElementById('recRendimientoUnidad').value,
 ingredientes:[...recetaTemp],
 precioVenta:precioSeleccionado||null,
 margenMultiplicador:precioSeleccionado && window.motorValores ? (precioSeleccionado / window.motorValores._unitFinal) : 1.54,
@@ -1126,6 +1142,7 @@ let r=recetas[i]
 recNombre.value=r.nombre
 recCategoria.value=r.categoria
 recRendimiento.value=r.rendimiento
+document.getElementById('recRendimientoUnidad').value=r.rendimientoUnidad||'unidades'
 
 recetaTemp=[...r.ingredientes]
 
@@ -1404,16 +1421,48 @@ listaRecetas.innerHTML=Object.keys(recAgrupadas).map(cat=>`
 <div class="group-card" style="background:${colorCategoria(cat)}">
 <div class="group-title">${cat}</div>
 ${recAgrupadas[cat].map(r=>`
-<div class="list-item">
+<div class="list-item" style="flex-direction:column;align-items:stretch;gap:8px;">
+<div style="display:flex;justify-content:space-between;align-items:center;">
 <div>
 <b>${r.nombre}</b><br>
-<span style="color:var(--muted);font-size:13px">Precio: $${r.precioVenta!=null ? r.precioVenta.toFixed(2) : "Sin precio"} ${r.precioFijo ? "🔒" : ""}</span>
+<span style="color:var(--muted);font-size:13px">Rinde: ${r.rendimiento} ${r.rendimientoUnidad||'unidades'} — Precio: $${r.precioVenta!=null ? r.precioVenta.toFixed(2) : "Sin precio"} / ${r.rendimientoUnidad||'unidad'} ${r.precioFijo ? "🔒" : ""}</span>
 </div>
-<div>
-<button class="btn-fix" onclick="fijarPrecioReceta(${r._idx})">${r.precioFijo ? "🔓 Desfijar" : "🔒 Fijar"}</button>
-<button class="btn-edit" onclick="editarReceta(${r._idx})">✏️ Editar</button>
-<button class="btn-del" onclick="borrarReceta(${r._idx})">🗑 Borrar</button>
+<div style="display:flex;gap:4px;flex-shrink:0;">
+<button class="btn-fix" onclick="fijarPrecioReceta(${r._idx})">${r.precioFijo ? "🔓" : "🔒"}</button>
+<button class="btn-edit" onclick="editarReceta(${r._idx})">✏️</button>
+<button class="btn-del" onclick="borrarReceta(${r._idx})">🗑</button>
 </div>
+</div>
+${r.precioVenta != null ? `
+<div class="porcion-calc" style="background:rgba(62,206,206,0.08);border:1px solid var(--border);border-radius:8px;padding:8px 10px;">
+<div style="font-size:12px;color:var(--sidebar);font-weight:700;margin-bottom:6px;">🧮 Calculá el precio de una porción</div>
+<div style="display:flex;gap:6px;align-items:center;">
+<input
+type="number"
+placeholder="Cantidad"
+id="porcion-cant-${r._idx}"
+style="margin-top:0;flex:1;padding:7px 10px;font-size:13px;"
+oninput="calcularPorcion(${r._idx}, ${r.precioVenta}, '${r.rendimientoUnidad||'unidades'}')"
+>
+<select
+id="porcion-unidad-${r._idx}"
+style="margin-top:0;flex:1;padding:7px 10px;font-size:13px;"
+onchange="calcularPorcion(${r._idx}, ${r.precioVenta}, '${r.rendimientoUnidad||'unidades'}')"
+>
+${r.rendimientoUnidad === 'unidades' || !r.rendimientoUnidad ? `
+<option value="unidades">Unidades</option>
+` : (r.rendimientoUnidad === 'kg' || r.rendimientoUnidad === 'g') ? `
+<option value="g">Gramos (g)</option>
+<option value="kg">Kilogramos (kg)</option>
+` : `
+<option value="ml">Mililitros (ml)</option>
+<option value="lt">Litros (lt)</option>
+`}
+</select>
+<div id="porcion-resultado-${r._idx}" style="font-weight:700;color:var(--primary);font-size:15px;min-width:70px;text-align:right;">—</div>
+</div>
+</div>
+` : ''}
 </div>
 `).join("")}
 </div>
@@ -1455,6 +1504,50 @@ ${comAgrupados[cat].map(c=>`
 `).join("")}
 </div>
 `).join("")
+}
+
+/* ================= CALCULADOR DE PORCIONES ================= */
+
+function calcularPorcion(idx, precioBase, unidadBase){
+let cant = parseFloat(document.getElementById('porcion-cant-'+idx)?.value)
+let unidadPorcion = document.getElementById('porcion-unidad-'+idx)?.value
+let resultado = document.getElementById('porcion-resultado-'+idx)
+
+if(!resultado) return
+
+if(!cant || cant <= 0){
+resultado.innerHTML = "—"
+return
+}
+
+let precio = 0
+
+// Si la receta rinde en unidades, el precio es por unidad
+if(unidadBase === 'unidades' || !unidadBase){
+precio = precioBase * cant
+
+// Conversiones de peso/volumen
+} else if(unidadBase === 'kg'){
+if(unidadPorcion === 'kg')  precio = precioBase * cant
+if(unidadPorcion === 'g')   precio = precioBase * (cant / 1000)
+
+} else if(unidadBase === 'g'){
+if(unidadPorcion === 'g')   precio = precioBase * cant
+if(unidadPorcion === 'kg')  precio = precioBase * (cant * 1000)
+
+} else if(unidadBase === 'lt'){
+if(unidadPorcion === 'lt')  precio = precioBase * cant
+if(unidadPorcion === 'ml')  precio = precioBase * (cant / 1000)
+
+} else if(unidadBase === 'ml'){
+if(unidadPorcion === 'ml')  precio = precioBase * cant
+if(unidadPorcion === 'lt')  precio = precioBase * (cant * 1000)
+
+} else {
+precio = precioBase * cant
+}
+
+resultado.innerHTML = "$" + precio.toFixed(2)
 }
 
 // Arrancar mostrando ingredientes
