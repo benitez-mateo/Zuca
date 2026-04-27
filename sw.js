@@ -1,4 +1,4 @@
-const CACHE = 'zuca-v1'
+const CACHE = 'zuca-v2'
 
 const ARCHIVOS = [
   './Lista_zuca.html',
@@ -24,11 +24,19 @@ self.addEventListener('activate', e => {
   self.clients.claim()
 })
 
-// Fetch: responder desde caché si está disponible, si no ir a la red
+// Fetch: primero intenta la red, si falla usa la caché
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      return cached || fetch(e.request).catch(() => caches.match('./Lista_zuca.html'))
-    })
+    fetch(e.request)
+      .then(response => {
+        // Guardar copia actualizada en caché
+        let copia = response.clone()
+        caches.open(CACHE).then(cache => cache.put(e.request, copia))
+        return response
+      })
+      .catch(() => {
+        // Sin internet: usar la caché
+        return caches.match(e.request).then(cached => cached || caches.match('./Lista_zuca.html'))
+      })
   )
 })
