@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Zuca – Pastelería Artesanal</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1b8f8f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Zuca">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+
+:root{
+--bg:#e8f9f9;
+--sidebar:#1b8f8f;
+--sidebar-dark:#156e6e;
+--card:#ffffff;
+--border:#b2e4e4;
+--primary:#E8739A;
+--primary-dark:#d45a85;
+--teal:#3ECECE;
+--teal-light:#7ee0e0;
+--text:#2a4a4a;
+--muted:#6b9999;
+--accent-pink:#E8739A;
+--accent-teal:#3ECECE;
+--editing-bg:#fff8e1;
+--editing-border:#f59e0b;
+}
+
+*{box-sizing:border-box;font-family:'Quicksand',sans-serif;}
+
+body{
+margin:0;
+background:var(--bg);
+display:flex;
+color:var(--text);
+min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:240px;
+background:var(--sidebar);
+color:white;
+padding:0;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+box-shadow:3px 0 15px rgba(0,0,0,0.15);
+}
+
+.sidebar-logo{
+padding:24px 20px 16px;
+border-bottom:1px solid rgba(255,255,255,0.15);
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:8px;
+background:var(--sidebar-dark);
+}
+
+.sidebar-logo svg{
+width:100px;
+height:100px;
+}
+
+.sidebar-logo .app-name{
+font-family:'Pacifico',cursive;
+font-size:14px;
+color:rgba(255,255,255,0.85);
+letter-spacing:0.5px;
+text-align:center;
+}
+
+.sidebar-nav{
+padding:16px 12px;
+flex:1;
+}
+
+.sidebar-nav button{
+width:100%;
+padding:12px 14px;
+margin-bottom:6px;
+background:transparent;
+border:1px solid rgba(255,255,255,0.15);
+color:white;
+border-radius:10px;
+cursor:pointer;
+text-align:left;
+font-family:'Quicksand',sans-serif;
+font-weight:600;
+font-size:14px;
+transition:all 0.2s;
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+.sidebar-nav button:hover,
+.sidebar-nav button.active{
+background:rgba(255,255,255,0.15);
+border-color:rgba(255,255,255,0.35);
+transform:translateX(3px);
+}
+
+/* MAIN */
+
+.main{
+flex:1;
+padding:25px;
+}
+
+.main h3{
+font-family:'Pacifico',cursive;
+color:var(--sidebar);
+font-size:22px;
+margin-bottom:16px;
+font-weight:400;
+}
+
+/* CARD */
+
+.card{
+background:white;
+padding:20px;
+border-radius:14px;
+border:1px solid var(--border);
+margin-bottom:15px;
+box-shadow:0 2px 8px rgba(62,206,206,0.08);
+}
+
+/* EDITING MODE */
+
+.card.editing-mode{
+border:2px solid var(--editing-border);
+background:var(--editing-bg);
+}
+
+.editing-banner{
+display:none;
+background:#f59e0b;
+color:white;
+padding:8px 14px;
+border-radius:8px;
+font-weight:700;
+font-size:13px;
+margin-bottom:12px;
+align-items:center;
+gap:6px;
+}
+
+.editing-banner.visible{
+display:flex;
+}
+
+/* INPUTS */
+
+input,select{
+padding:10px 12px;
+border-radius:8px;
+border:1.5px solid var(--border);
+width:100%;
+font-family:'Quicksand',sans-serif;
+font-size:14px;
+color:var(--text);
+background:white;
+transition:border-color 0.2s;
+margin-top:6px;
+}
+
+input:focus,select:focus{
+outline:none;
+border-color:var(--teal);
+box-shadow:0 0 0 3px rgba(62,206,206,0.15);
+}
+
+.row{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+/* BUTTONS */
+
+.primary{
+background:var(--primary);
+color:white;
+border:none;
+padding:11px;
+border-radius:10px;
+width:100%;
+font-weight:700;
+font-size:14px;
+cursor:pointer;
+margin-top:10px;
+font-family:'Quicksand',sans-serif;
+transition:background 0.2s, transform 0.1s;
+}
+
+.primary:hover{
+background:var(--primary-dark);
+transform:translateY(-1px);
+}
+
+.secondary{
+background:var(--teal-light);
+border:none;
+padding:10px 14px;
+border-radius:8px;
+cursor:pointer;
+font-family:'Quicksand',sans-serif;
+font-weight:600;
+color:white;
+font-size:13px;
+transition:background 0.2s;
+}
+
+.secondary:hover{
+background:var(--teal);
+}
+
+/* LIST */
+
+.list-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px 8px;
+border-bottom:1px solid var(--border);
+}
+
+.list-item:hover{
+background:#f0fcfc;
+border-radius:8px;
+}
+
+.list-item button{
+padding:5px 10px;
+border-radius:6px;
+border:none;
+cursor:pointer;
+font-family:'Quicksand',sans-serif;
+font-weight:600;
+font-size:12px;
+margin-left:4px;
+transition:opacity 0.15s;
+}
+
+.list-item button:hover{opacity:0.8;}
+
+.btn-edit{background:var(--teal-light);color:white;}
+.btn-fix{background:#a78bfa;color:white;}
+.btn-del{background:#fca5a5;color:#7f1d1d;}
+
+/* MOTOR */
+
+.price-motor{
+background:#f0fcfc;
+border:1.5px solid var(--teal-light);
+padding:20px;
+border-radius:12px;
+margin-top:15px;
+}
+
+.price-grid{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.price-card{
+flex:1;
+background:white;
+border:2px solid var(--border);
+padding:15px;
+border-radius:10px;
+cursor:pointer;
+transition:all 0.2s;
+text-align:center;
+}
+
+.price-card:hover{
+border-color:var(--teal);
+transform:translateY(-2px);
+}
+
+.price-card.selected{
+border:2px solid var(--primary);
+background:#fff0f5;
+box-shadow:0 3px 12px rgba(232,115,154,0.2);
+}
+
+.unit{
+font-size:12px;
+color:var(--muted);
+margin-top:3px;
+}
+
+/* FILTER ROW */
+.filter-row{
+display:flex;
+gap:10px;
+margin-bottom:10px;
+}
+
+.filter-row input,
+.filter-row select{
+margin-top:0;
+}
+
+/* COMBO */
+
+.combo-box{
+background:#f0fcfc;
+border:1px solid var(--border);
+padding:15px;
+border-radius:10px;
+margin-top:10px;
+min-height:40px;
+}
+
+/* GROUP CARDS */
+.group-card{
+border-radius:12px;
+padding:12px 14px;
+margin-top:12px;
+border:1px solid rgba(0,0,0,0.06);
+}
+
+.group-card .group-title{
+font-weight:700;
+font-size:13px;
+text-transform:uppercase;
+letter-spacing:0.5px;
+color:var(--sidebar);
+margin-bottom:6px;
+padding-bottom:4px;
+border-bottom:1px solid rgba(0,0,0,0.06);
+}
+
+/* SECTION LABEL */
+h4{
+color:var(--sidebar);
+font-size:14px;
+margin:14px 0 4px;
+}
+
+/* MOBILE */
+
+@media (max-width:768px){
+
+body{flex-direction:column;}
+
+.sidebar{
+width:100%;
+min-height:auto;
+flex-direction:column;
+}
+
+.sidebar-logo{
+padding:12px;
+flex-direction:row;
+}
+
+.sidebar-logo svg{width:50px;height:50px;}
+
+.sidebar-nav{
+display:flex;
+gap:5px;
+padding:8px;
+}
+
+.sidebar-nav button{
+flex:1;
+font-size:11px;
+padding:8px 6px;
+margin-bottom:0;
+justify-content:center;
+}
+
+.main{padding:10px;}
+
+.row{flex-direction:column;}
+
+.price-grid{flex-direction:column;}
+
+.list-item{
+flex-direction:column;
+align-items:flex-start;
+gap:6px;
+}
+
+.filter-row{flex-direction:column;}
+
+}
+
+</style>
+</head>
+
+<body>
+<div class="sidebar">
+
+<div class="sidebar-logo">
+<!-- Logo SVG de Zuca Pastelería Artesanal -->
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Círculo exterior -->
+  <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+  <!-- Círculo interior -->
+  <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+  <!-- Nombre Zuca -->
+  <text x="100" y="108" text-anchor="middle" font-family="Georgia, serif" font-size="42" font-weight="bold" fill="white">Zuca</text>
+  <!-- Subtítulo -->
+  <text x="100" y="128" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="rgba(255,255,255,0.85)">Pastelería</text>
+  <text x="100" y="144" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="rgba(255,255,255,0.85)">Artesanal</text>
+  <!-- Batidora (izq abajo) -->
+  <g transform="translate(28,130) scale(0.55)" stroke="rgba(255,255,255,0.7)" stroke-width="2" fill="none">
+    <rect x="5" y="10" width="22" height="28" rx="3"/>
+    <rect x="10" y="38" width="12" height="10" rx="2"/>
+    <ellipse cx="16" cy="20" rx="7" ry="7"/>
+    <line x1="16" y1="27" x2="16" y2="48"/>
+  </g>
+  <!-- Torta (der arriba) -->
+  <g transform="translate(138,24) scale(0.55)" stroke="rgba(255,255,255,0.7)" stroke-width="2" fill="none">
+    <ellipse cx="22" cy="20" rx="18" ry="8"/>
+    <rect x="4" y="20" width="36" height="18" rx="2"/>
+    <ellipse cx="22" cy="38" rx="18" ry="6"/>
+    <path d="M16 12 Q22 4 28 12" stroke-width="1.5"/>
+  </g>
+  <!-- Rama decorativa izq arriba -->
+  <g transform="translate(28,30)" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" fill="none">
+    <path d="M0,20 Q15,5 35,15"/>
+    <circle cx="8" cy="14" r="2.5" fill="rgba(255,255,255,0.5)"/>
+    <circle cx="20" cy="7" r="2" fill="rgba(255,255,255,0.5)"/>
+    <circle cx="30" cy="12" r="2.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+  <!-- Rama decorativa der abajo -->
+  <g transform="translate(120,148)" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" fill="none">
+    <path d="M0,0 Q20,10 35,0"/>
+    <circle cx="8" cy="5" r="2.5" fill="rgba(255,255,255,0.5)"/>
+    <circle cx="22" cy="9" r="2" fill="rgba(255,255,255,0.5)"/>
+    <circle cx="33" cy="3" r="2.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+</svg>
+<span class="app-name">Lista de Precios</span>
+</div>
+
+<div class="sidebar-nav">
+<button onclick="show('ingredientes')" id="nav-ingredientes">🧂 Ingredientes</button>
+<button onclick="show('recetas')" id="nav-recetas">📋 Recetas</button>
+<button onclick="show('combos')" id="nav-combos">🎁 Combos</button>
+</div>
+
+</div>
+
+<div class="main">
+
+<!-- INGREDIENTES -->
+<div id="ingredientes" class="card">
+
+<h3>🧂 Ingredientes</h3>
+
+<div class="filter-row">
+<input id="buscarIngredientes" placeholder="🔍 Buscar ingrediente..." oninput="render()">
+<select id="filtroCategoriaIngredientes" onchange="render()" style="margin-top:0">
+<option value="">Todas las categorías</option>
+<option>Harinas</option>
+<option>Lácteos</option>
+<option>Huevos</option>
+<option>Azúcar</option>
+<option>Chocolates</option>
+<option>Frutos secos</option>
+<option>Esencias</option>
+<option>Rellenos</option>
+<option>Otros</option>
+</select>
+</div>
+
+<div id="bannerIng" class="editing-banner">✏️ Editando ingrediente — guardá para confirmar los cambios</div>
+
+<input id="ingNombre" placeholder="Nombre del ingrediente">
+
+<select id="ingCategoria">
+<option value="">Categoría</option>
+<option>Harinas</option>
+<option>Lácteos</option>
+<option>Huevos</option>
+<option>Azúcar</option>
+<option>Chocolates</option>
+<option>Frutos secos</option>
+<option>Esencias</option>
+<option>Rellenos</option>
+<option>Otros</option>
+</select>
+
+<div class="row">
+<input id="ingPrecio" type="number" placeholder="Precio paquete ($)">
+<input id="ingCantidad" type="number" placeholder="Cantidad paquete">
+<select id="ingUnidad">
+<option value="kg">kg</option>
+<option value="g">g</option>
+<option value="lt">lt</option>
+<option value="ml">ml</option>
+<option value="unidad">unidad</option>
+</select>
+</div>
+
+<button class="primary" id="btnGuardarIng" onclick="addIngrediente()">💾 Guardar ingrediente</button>
+
+<div id="listaIngredientes"></div>
+
+</div>
+
+
+<!-- RECETAS -->
+<div id="recetas" class="card" style="display:none">
+
+<h3>📋 Recetas</h3>
+
+<div class="filter-row">
+<input id="buscarRecetas" placeholder="🔍 Buscar receta..." oninput="render()">
+<select id="filtroCategoriaRecetas" onchange="render()" style="margin-top:0">
+<option value="">Todas las categorías</option>
+<option>Facturas</option>
+<option>Tortas</option>
+<option>Panificados</option>
+<option>Galletas</option>
+<option>Budines</option>
+<option>Postres</option>
+<option>Salados</option>
+<option>Otros</option>
+</select>
+</div>
+
+<div id="bannerRec" class="editing-banner">✏️ Editando receta — guardá para confirmar los cambios</div>
+
+<input id="recNombre" placeholder="Nombre de la receta">
+
+<select id="recCategoria">
+<option value="">Categoría</option>
+<option>Facturas</option>
+<option>Tortas</option>
+<option>Panificados</option>
+<option>Galletas</option>
+<option>Budines</option>
+<option>Postres</option>
+<option>Salados</option>
+<option>Otros</option>
+</select>
+
+<div class="row">
+<input id="recRendimiento" type="number" placeholder="Rendimiento (ej: 12)">
+<select id="recRendimientoUnidad">
+<option value="unidades">Unidades</option>
+<option value="g">Gramos (g)</option>
+<option value="kg">Kilogramos (kg)</option>
+<option value="ml">Mililitros (ml)</option>
+<option value="lt">Litros (lt)</option>
+</select>
+</div>
+
+<h4>Embalaje</h4>
+
+<div class="row">
+<input id="embCantidad" type="number" placeholder="Unidades de embalaje" oninput="calcularMotor()">
+<input id="embPrecio" type="number" placeholder="Precio por unidad de embalaje" oninput="calcularMotor()">
+</div>
+
+<h4>Agregar ingrediente a la receta</h4>
+
+<div class="row">
+<select id="recIngrediente"></select>
+<input id="recCantidad" type="number" placeholder="Cantidad">
+<select id="recUnidadUso">
+<option value="kg">kg</option>
+<option value="g">g</option>
+<option value="lt">lt</option>
+<option value="ml">ml</option>
+<option value="unidad">unidad</option>
+</select>
+<button class="secondary" onclick="addRecetaIngrediente()">+ Agregar</button>
+</div>
+
+<div id="preview"></div>
+
+<div id="motor" class="price-motor" style="display:none">
+
+<div id="costoBase"></div>
+<div id="costoUnitario" class="unit"></div>
+
+<div class="price-grid">
+
+<div class="price-card" onclick="selectPrecio('cons')" id="cardCons">
+<b>Conservador</b>
+<div id="consPrecio"></div>
+<div id="consUnit" class="unit"></div>
+</div>
+
+<div class="price-card" onclick="selectPrecio('rec')" id="cardRec">
+<b>Recomendado</b>
+<div id="recPrecio"></div>
+<div id="recUnit" class="unit"></div>
+</div>
+
+<div class="price-card" onclick="selectPrecio('prem')" id="cardPrem">
+<b>Premium</b>
+<div id="premPrecio"></div>
+<div id="premUnit" class="unit"></div>
+</div>
+
+<div class="price-card" onclick="selectPrecio('max')" id="cardMax">
+<b>Máximo</b>
+<div id="maxPrecio"></div>
+<div id="maxUnit" class="unit"></div>
+</div>
+
+</div>
+<h4>Costos adicionales</h4>
+
+<div class="row">
+<input id="gasCosto" type="number" placeholder="Costo de gas total" oninput="calcularMotor()">
+<input id="gasPorcentaje" type="number" placeholder="% a aplicar" oninput="calcularMotor()">
+</div>
+
+<button class="primary" onclick="aplicarPrecio()">✅ Aplicar precio</button>
+
+</div>
+
+<button class="primary" id="btnGuardarRec" onclick="guardarReceta()">💾 Guardar receta</button>
+
+<div id="listaRecetas"></div>
+
+</div>
+
+
+<!-- COMBOS -->
+<div id="combos" class="card" style="display:none">
+
+<h3>🎁 Combos</h3>
+
+<div class="filter-row">
+<input id="buscarCombos" placeholder="🔍 Buscar combo..." oninput="render()">
+<select id="filtroCategoriaCombos" onchange="render()" style="margin-top:0">
+<option value="">Todas las categorías</option>
+<option>Promos</option>
+<option>Desayunos</option>
+<option>Meriendas</option>
+<option>Ofertas</option>
+<option>Combos dulces</option>
+<option>Combos salados</option>
+<option>Otros</option>
+</select>
+</div>
+
+<div id="bannerCombo" class="editing-banner">✏️ Editando combo — guardá para confirmar los cambios</div>
+
+<input id="comboNombre" placeholder="Nombre del combo">
+
+<select id="comboCategoria">
+<option value="">Categoría</option>
+<option>Promos</option>
+<option>Desayunos</option>
+<option>Meriendas</option>
+<option>Ofertas</option>
+<option>Combos dulces</option>
+<option>Combos salados</option>
+<option>Otros</option>
+</select>
+
+<div class="row">
+<select id="comboReceta"></select>
+<input id="comboCantidad" type="number" value="1">
+<button class="secondary" onclick="agregarCombo()">Agregar</button>
+</div>
+
+<div id="comboPreview" class="combo-box"></div>
+
+<label style="font-weight:600;font-size:13px;color:var(--muted);margin-top:8px;display:block;">Descuento %</label>
+<input id="comboDescuento" type="number" value="10" oninput="calcularCombo()">
+
+<div id="comboTotal"></div>
+
+<button class="primary" id="btnGuardarCombo" onclick="guardarCombo()">💾 Guardar combo</button>
+
+<div id="listaCombos"></div>
+
+</div>
+
+</div>
+<script>
+
+let ingredientes=JSON.parse(localStorage.getItem('ingredientes')||'[]')
+let recetas=JSON.parse(localStorage.getItem('recetas')||'[]')
+let combos=JSON.parse(localStorage.getItem('combos')||'[]')
+
+let recetaTemp=[]
+let comboTemp=[]
+let precioSeleccionado=0
+
+let editandoIngrediente=null
+let editandoReceta=null
+let editandoCombo=null
+
+/* COLORES POR CATEGORIA */
+
+const coloresCategoria={
+"Harinas":"#fef9e7",
+"Lácteos":"#e8f4fc",
+"Huevos":"#fde8e8",
+"Azúcar":"#fce4f0",
+"Chocolates":"#f0ebff",
+"Frutos secos":"#fdf4e7",
+"Esencias":"#e8f9f0",
+"Rellenos":"#fff0f5",
+"Facturas":"#e8f9f0",
+"Tortas":"#fce4f0",
+"Panificados":"#e8f4fc",
+"Galletas":"#fef9e7",
+"Budines":"#fde8e8",
+"Postres":"#f0ebff",
+"Salados":"#f0f9f9",
+"Promos":"#e8f9f0",
+"Desayunos":"#fef9e7",
+"Meriendas":"#fce4f0",
+"Combos":"#e8f4fc"
+}
+
+function colorCategoria(cat){
+return coloresCategoria[cat] || "#f8fefe"
+}
+
+/* INDICADOR VISUAL DE EDICIÓN */
+
+function setEditMode(section, isEditing){
+const card = document.getElementById(section)
+const bannerMap = {
+'ingredientes': 'bannerIng',
+'recetas': 'bannerRec',
+'combos': 'bannerCombo'
+}
+const banner = document.getElementById(bannerMap[section])
+if(!card || !banner) return
+if(isEditing){
+card.classList.add('editing-mode')
+banner.classList.add('visible')
+}else{
+card.classList.remove('editing-mode')
+banner.classList.remove('visible')
+}
+}
+
+function show(id){
+document.querySelectorAll(".main > .card").forEach(e=>e.style.display="none")
+document.getElementById(id).style.display="block"
+// highlight nav button
+document.querySelectorAll(".sidebar-nav button").forEach(b=>b.classList.remove("active"))
+document.getElementById("nav-"+id)?.classList.add("active")
+render()
+}
+
+function save(){
+localStorage.setItem('ingredientes',JSON.stringify(ingredientes))
+localStorage.setItem('recetas',JSON.stringify(recetas))
+localStorage.setItem('combos',JSON.stringify(combos))
+}
+
+/* ================= RECALCULAR TODO ================= */
+
+function recalcularTodo(){
+
+recetas.forEach(r=>{
+if(r.precioFijo) return
+
+let costo=0
+
+r.ingredientes.forEach(i=>{
+let ingActual=ingredientes.find(x=>x.nombre==i.nombre)
+if(!ingActual) return
+
+costo+=convertir(
+ingActual.precio,
+ingActual.unidad,
+i.cantidad,
+i.unidadUso
+)
+})
+
+let unit=costo/(r.rendimiento||1)
+r.precioVenta=unit*(r.margenMultiplicador||1.54)
+})
+
+combos.forEach(c=>{
+if(c.precioFijo) return
+
+let total=0
+
+c.items.forEach(i=>{
+let r=recetas.find(x=>x.nombre==i.nombre)
+if(!r) return
+total+=r.precioVenta*i.cantidad
+})
+
+c.precio=total-(total*(c.descuento||0)/100)
+})
+
+save()
+}
+
+/* ================= INGREDIENTES ================= */
+
+function addIngrediente(){
+
+if(!ingNombre.value.trim()){
+alert("Ingresá un nombre para el ingrediente")
+return
+}
+
+if(!ingCategoria.value){
+alert("Seleccioná una categoría")
+return
+}
+
+let precio=parseFloat(ingPrecio.value||0)
+let cantidad=parseFloat(ingCantidad.value||1)
+
+if(precio<=0){
+alert("Ingresá un precio válido")
+return
+}
+
+let precioUnitario=precio/cantidad
+
+let nuevo={
+nombre:ingNombre.value.trim(),
+categoria:ingCategoria.value,
+precio:precioUnitario,
+unidad:ingUnidad.value,
+precioPaquete:precio,
+cantidadPaquete:cantidad
+}
+
+if(editandoIngrediente!==null){
+ingredientes[editandoIngrediente]=nuevo
+editandoIngrediente=null
+}else{
+ingredientes.push(nuevo)
+}
+
+recalcularTodo()
+render()
+
+ingNombre.value=""
+ingCategoria.value=""
+ingPrecio.value=""
+ingCantidad.value=""
+ingUnidad.value="kg"
+editandoIngrediente=null
+setEditMode('ingredientes', false)
+}
+
+function editarIngrediente(i){
+let ing=ingredientes[i]
+
+ingNombre.value=ing.nombre
+ingCategoria.value=ing.categoria
+ingPrecio.value=ing.precioPaquete
+ingCantidad.value=ing.cantidadPaquete
+ingUnidad.value=ing.unidad
+
+editandoIngrediente=i
+setEditMode('ingredientes', true)
+document.getElementById('ingredientes').scrollIntoView({behavior:'smooth',block:'start'})
+}
+
+/* ================= CONVERSION ================= */
+
+function convertir(precio,base,cant,uso){
+// precio = precio por 1 unidad de `base`
+// necesitamos: cuántas unidades de `base` hay en `cant` unidades de `uso`
+
+if(base=="kg" && uso=="g")  return precio*(cant/1000)   // cant g → kg
+if(base=="g"  && uso=="kg") return precio*(cant*1000)   // cant kg → g
+if(base=="kg" && uso=="kg") return precio*cant
+if(base=="g"  && uso=="g")  return precio*cant
+
+if(base=="lt" && uso=="ml") return precio*(cant/1000)   // cant ml → lt
+if(base=="ml" && uso=="lt") return precio*(cant*1000)   // cant lt → ml
+if(base=="lt" && uso=="lt") return precio*cant
+if(base=="ml" && uso=="ml") return precio*cant
+
+// unidad → unidad o cualquier combinación no declarada
+return precio*cant
+}
+
+/* ================= RECETAS ================= */
+
+function addRecetaIngrediente(){
+
+if(ingredientes.length===0){
+alert("Primero cargá ingredientes")
+return
+}
+
+let ing=ingredientes[recIngrediente.value]
+
+if(!ing){
+alert("Seleccioná un ingrediente válido")
+return
+}
+
+let cant=parseFloat(recCantidad.value)
+if(!cant || cant<=0){
+alert("Ingresá una cantidad válida")
+return
+}
+
+recetaTemp.push({
+...ing,
+cantidad:cant,
+unidadUso:recUnidadUso.value
+})
+
+renderPreview()
+calcularMotor()
+
+recCantidad.value=""
+}
+
+function renderPreview(){
+preview.innerHTML=recetaTemp.map((i,index)=>
+`
+<div style="display:flex;justify-content:space-between;align-items:center">
+<span>${i.nombre} - ${i.cantidad} ${i.unidadUso}</span>
+<button onclick="eliminarIngredienteReceta(${index})">❌</button>
+</div>
+`
+).join("")
+}
+
+function eliminarIngredienteReceta(index){
+recetaTemp.splice(index,1)
+renderPreview()
+calcularMotor()
+}
+
+function calcularCosto(){
+return recetaTemp.reduce((t,i)=>
+t+convertir(i.precio,i.unidad,i.cantidad,i.unidadUso)
+,0)
+}
+
+function calcularMotor(){
+
+if(recetaTemp.length===0){
+motor.style.display="none"
+return
+}
+
+let costoIngredientes = calcularCosto()
+let rend = parseFloat(recRendimiento.value || 1)
+let rendUnidad = document.getElementById('recRendimientoUnidad').value || 'unidades'
+
+/* ================= EMBALAJE ================= */
+
+let embCant = parseFloat(embCantidad.value || 0)
+let precioEmb = parseFloat(embPrecio.value || 0)
+
+let costoEmbalaje = embCant * precioEmb
+
+/* ================= COSTO TOTAL ================= */
+
+let costo = costoIngredientes + costoEmbalaje
+
+/* ================= COSTO UNITARIO ================= */
+
+let unit = costo / rend
+
+/* ================= GAS + % ================= */
+
+let gas = parseFloat(gasCosto.value || 0)
+let gasPorc = parseFloat(gasPorcentaje.value || 0)
+
+// gas por unidad
+let gasUnit = gas / rend
+
+// porcentaje aplicado SOLO al gas
+let extraGas = gasUnit * (gasPorc / 100)
+
+// costo final unitario real
+let unitFinal = unit + gasUnit + extraGas
+
+/* ================= PRECIOS ================= */
+
+let cons = unitFinal * 1.25
+let rec = unitFinal * 1.54
+let prem = unitFinal * 2
+let max = unitFinal * 3
+
+/* ================= MOSTRAR ================= */
+
+costoBase.innerHTML = `
+Ingredientes: $${costoIngredientes.toFixed(2)}<br>
+Embalaje: $${costoEmbalaje.toFixed(2)}<br>
+Total: $${costo.toFixed(2)}
+`
+
+costoUnitario.innerHTML = `Costo por ${rendUnidad === 'unidades' ? 'unidad' : rendUnidad}: $${unitFinal.toFixed(2)}`
+
+consPrecio.innerHTML = "$" + cons.toFixed(2)
+consUnit.innerHTML = "Margen 25%"
+recPrecio.innerHTML = "$" + rec.toFixed(2)
+recUnit.innerHTML = "Margen 54%"
+premPrecio.innerHTML = "$" + prem.toFixed(2)
+premUnit.innerHTML = "Margen 100%"
+maxPrecio.innerHTML = "$" + max.toFixed(2)
+maxUnit.innerHTML = "Margen 200%"
+
+motor.style.display = "block"
+
+window.motorValores = {cons, rec, prem, max, _unitFinal: unitFinal}
+}
+
+function selectPrecio(tipo){
+
+if(!window.motorValores){
+alert("Calculá el motor de precios primero")
+return
+}
+
+document.querySelectorAll(".price-card")
+.forEach(e=>e.classList.remove("selected"))
+
+if(tipo=="cons"){
+cardCons.classList.add("selected")
+precioSeleccionado=motorValores.cons
+}
+
+if(tipo=="rec"){
+cardRec.classList.add("selected")
+precioSeleccionado=motorValores.rec
+}
+
+if(tipo=="prem"){
+cardPrem.classList.add("selected")
+precioSeleccionado=motorValores.prem
+}
+
+if(tipo=="max"){
+cardMax.classList.add("selected")
+precioSeleccionado=motorValores.max
+}
+}
+
+function aplicarPrecio(){
+
+if(!precioSeleccionado){
+alert("Seleccioná un precio primero")
+return
+}
+
+// aplicar precio a receta temporal
+document.getElementById("recPrecioAplicado")?.remove()
+
+let info = document.createElement("div")
+info.id = "recPrecioAplicado"
+info.innerHTML = "Precio seleccionado: $" + precioSeleccionado.toFixed(2)
+info.style.marginTop = "10px"
+info.style.fontWeight = "bold"
+
+document.getElementById("motor").appendChild(info)
+
+}
+
+function guardarReceta(){
+
+if(!recNombre.value.trim()){
+alert("Ingresá un nombre para la receta")
+return
+}
+
+if(recetaTemp.length===0){
+alert("Agregá al menos un ingrediente a la receta")
+return
+}
+
+let rend=parseFloat(recRendimiento.value)
+if(!rend || rend<=0){
+alert("Ingresá un rendimiento válido (mayor a 0)")
+return
+}
+
+let nueva={
+nombre:recNombre.value.trim(),
+categoria:recCategoria.value,
+rendimiento:rend,
+rendimientoUnidad:document.getElementById('recRendimientoUnidad').value,
+ingredientes:[...recetaTemp],
+precioVenta:precioSeleccionado||null,
+margenMultiplicador:precioSeleccionado && window.motorValores ? (precioSeleccionado / window.motorValores._unitFinal) : 1.54,
+precioFijo:false
+}
+
+if(editandoReceta!==null){
+recetas[editandoReceta]=nueva
+editandoReceta=null
+}else{
+recetas.push(nueva)
+}
+
+recetaTemp=[]
+save()
+render()
+
+recNombre.value=""
+recCategoria.value=""
+recRendimiento.value=""
+recCantidad.value=""
+embCantidad.value=""
+embPrecio.value=""
+gasCosto.value=""
+gasPorcentaje.value=""
+
+recetaTemp=[]
+preview.innerHTML=""
+motor.style.display="none"
+
+precioSeleccionado=0
+setEditMode('recetas', false)
+}
+
+function editarReceta(i){
+let r=recetas[i]
+
+recNombre.value=r.nombre
+recCategoria.value=r.categoria
+recRendimiento.value=r.rendimiento
+document.getElementById('recRendimientoUnidad').value=r.rendimientoUnidad||'unidades'
+
+recetaTemp=[...r.ingredientes]
+
+renderPreview()
+calcularMotor()
+
+editandoReceta=i
+setEditMode('recetas', true)
+show('recetas')
+document.getElementById('recetas').scrollIntoView({behavior:'smooth',block:'start'})
+}
+
+function fijarPrecioReceta(i){
+recetas[i].precioFijo=!recetas[i].precioFijo
+save()
+render()
+}
+
+/* ================= COMBOS ================= */
+
+function agregarCombo(){
+
+if(recetas.length===0){
+alert("Primero cargá recetas")
+return
+}
+
+let r=recetas[comboReceta.value]
+
+if(!r){
+alert("Seleccioná una receta válida")
+return
+}
+
+let cant=parseFloat(comboCantidad.value)
+if(!cant || cant<=0){
+alert("Ingresá una cantidad válida")
+return
+}
+
+if(r.precioVenta==null || isNaN(r.precioVenta)){
+alert("La receta '" + r.nombre + "' no tiene precio asignado")
+return
+}
+
+comboTemp.push({
+nombre:r.nombre,
+precio:r.precioVenta,
+cantidad:cant
+})
+
+renderCombo()
+comboCantidad.value=""
+}
+
+function renderCombo(){
+
+comboPreview.innerHTML=comboTemp.map(i=>
+`${i.nombre} x${i.cantidad}`
+).join("<br>")
+
+calcularCombo()
+}
+
+function calcularCombo(){
+
+let total=comboTemp.reduce((t,i)=>
+t+(i.precio*i.cantidad)
+,0)
+
+let desc=parseFloat(comboDescuento.value||0)
+
+let final=total-(total*desc/100)
+
+comboTotal.innerHTML=`
+Subtotal: $${total.toFixed(2)}<br>
+Descuento: ${desc}%<br>
+Precio combo: $${final.toFixed(2)}
+`
+}
+
+function guardarCombo(){
+
+if(!comboNombre.value.trim()){
+alert("Ingresá un nombre para el combo")
+return
+}
+
+if(comboTemp.length===0){
+alert("Agregá al menos una receta al combo")
+return
+}
+
+let total=comboTemp.reduce((t,i)=>
+t+(i.precio*i.cantidad)
+,0)
+
+let desc=parseFloat(comboDescuento.value||0)
+
+let final=total-(total*desc/100)
+
+let nuevo={
+nombre:comboNombre.value,
+categoria:comboCategoria.value,
+items:[...comboTemp],
+precio:final,
+descuento:desc,
+precioFijo:false
+}
+
+if(editandoCombo!==null){
+combos[editandoCombo]=nuevo
+editandoCombo=null
+}else{
+combos.push(nuevo)
+}
+
+comboTemp=[]
+save()
+render()
+
+/* LIMPIAR CAMPOS */
+
+comboNombre.value=""
+comboCategoria.value=""
+comboCantidad.value=""
+comboDescuento.value=""
+
+comboPreview.innerHTML=""
+comboTotal.innerHTML=""
+setEditMode('combos', false)
+}
+
+function editarCombo(i){
+let c=combos[i]
+
+comboNombre.value=c.nombre
+comboCategoria.value=c.categoria
+comboTemp=[...c.items]
+
+renderCombo()
+
+comboDescuento.value=c.descuento
+
+editandoCombo=i
+setEditMode('combos', true)
+show('combos')
+document.getElementById('combos').scrollIntoView({behavior:'smooth',block:'start'})
+}
+
+function fijarPrecioCombo(i){
+combos[i].precioFijo=!combos[i].precioFijo
+save()
+render()
+}
+
+/* ================= BORRAR ================= */
+
+function borrarIngrediente(i){
+if(!confirm(`¿Borrar "${ingredientes[i].nombre}"?\nEsta acción no se puede deshacer.`)) return
+ingredientes.splice(i,1)
+recalcularTodo()
+render()
+}
+
+function borrarReceta(i){
+if(!confirm(`¿Borrar la receta "${recetas[i].nombre}"?\nEsta acción no se puede deshacer.`)) return
+recetas.splice(i,1)
+recalcularTodo()
+render()
+}
+
+function borrarCombo(i){
+if(!confirm(`¿Borrar el combo "${combos[i].nombre}"?\nEsta acción no se puede deshacer.`)) return
+combos.splice(i,1)
+save()
+render()
+}
+
+/* ================= AGRUPAR ================= */
+
+function agruparPorCategoria(lista){
+let grupos={}
+lista.forEach(i=>{
+let cat=i.categoria || "Sin categoría"
+if(!grupos[cat]) grupos[cat]=[]
+grupos[cat].push(i)
+})
+return grupos
+}
+
+/* ================= RENDER ================= */
+
+function render(){
+
+/* ================= SELECTS DINAMICOS ================= */
+
+// Ingredientes → recetas
+recIngrediente.innerHTML = ingredientes.map((ing, index)=>
+`<option value="${index}">${ing.nombre}</option>`
+).join("")
+
+// Recetas → combos
+comboReceta.innerHTML = recetas.map((r, index)=>
+`<option value="${index}">${r.nombre}</option>`
+).join("")
+
+
+/* ================= FILTROS ================= */
+
+let busqIng=(document.getElementById("buscarIngredientes").value||"").toLowerCase()
+let catIng=document.getElementById("filtroCategoriaIngredientes").value
+
+let busqRec=(document.getElementById("buscarRecetas").value||"").toLowerCase()
+let catRec=document.getElementById("filtroCategoriaRecetas").value
+
+let busqCom=(document.getElementById("buscarCombos").value||"").toLowerCase()
+let catCom=document.getElementById("filtroCategoriaCombos").value
+
+
+/* ================= INGREDIENTES ================= */
+
+// Trabajar con índices reales del array original
+let ingFiltrados=ingredientes
+.map((i,idx)=>({...i,_idx:idx}))
+.filter(i=>{
+let matchNombre=i.nombre.toLowerCase().includes(busqIng)
+let matchCat=!catIng || i.categoria===catIng
+return matchNombre && matchCat
+})
+
+let ingAgrupados={}
+ingFiltrados.forEach(i=>{
+let cat=i.categoria||"Sin categoría"
+if(!ingAgrupados[cat]) ingAgrupados[cat]=[]
+ingAgrupados[cat].push(i)
+})
+
+listaIngredientes.innerHTML=Object.keys(ingAgrupados).map(cat=>`
+<div class="group-card" style="background:${colorCategoria(cat)}">
+<div class="group-title">${cat}</div>
+${ingAgrupados[cat].map(i=>`
+<div class="list-item">
+<div>
+<b>${i.nombre}</b><br>
+<span style="color:var(--muted);font-size:13px">$${i.precio.toFixed(2)} / ${i.unidad}</span>
+</div>
+<div>
+<button class="btn-edit" onclick="editarIngrediente(${i._idx})">✏️ Editar</button>
+<button class="btn-del" onclick="borrarIngrediente(${i._idx})">🗑 Borrar</button>
+</div>
+</div>
+`).join("")}
+</div>
+`).join("")
+
+
+/* ================= RECETAS ================= */
+
+let recFiltradas=recetas
+.map((r,idx)=>({...r,_idx:idx}))
+.filter(r=>{
+let matchNombre=r.nombre.toLowerCase().includes(busqRec)
+let matchCat=!catRec || r.categoria===catRec
+return matchNombre && matchCat
+})
+
+let recAgrupadas={}
+recFiltradas.forEach(r=>{
+let cat=r.categoria||"Sin categoría"
+if(!recAgrupadas[cat]) recAgrupadas[cat]=[]
+recAgrupadas[cat].push(r)
+})
+
+listaRecetas.innerHTML=Object.keys(recAgrupadas).map(cat=>`
+<div class="group-card" style="background:${colorCategoria(cat)}">
+<div class="group-title">${cat}</div>
+${recAgrupadas[cat].map(r=>`
+<div class="list-item" style="flex-direction:column;align-items:stretch;gap:8px;">
+<div style="display:flex;justify-content:space-between;align-items:center;">
+<div>
+<b>${r.nombre}</b><br>
+<span style="color:var(--muted);font-size:13px">Rinde: ${r.rendimiento} ${r.rendimientoUnidad||'unidades'} — Precio: $${r.precioVenta!=null ? r.precioVenta.toFixed(2) : "Sin precio"} / ${r.rendimientoUnidad||'unidad'} ${r.precioFijo ? "🔒" : ""}</span>
+</div>
+<div style="display:flex;gap:4px;flex-shrink:0;">
+<button class="btn-fix" onclick="fijarPrecioReceta(${r._idx})">${r.precioFijo ? "🔓" : "🔒"}</button>
+<button class="btn-edit" onclick="editarReceta(${r._idx})">✏️</button>
+<button class="btn-del" onclick="borrarReceta(${r._idx})">🗑</button>
+</div>
+</div>
+${r.precioVenta != null ? `
+<div class="porcion-calc" style="background:rgba(62,206,206,0.08);border:1px solid var(--border);border-radius:8px;padding:8px 10px;">
+<div style="font-size:12px;color:var(--sidebar);font-weight:700;margin-bottom:6px;">🧮 Calculá el precio de una porción</div>
+<div style="display:flex;gap:6px;align-items:center;">
+<input
+type="number"
+placeholder="Cantidad"
+id="porcion-cant-${r._idx}"
+style="margin-top:0;flex:1;padding:7px 10px;font-size:13px;"
+oninput="calcularPorcion(${r._idx}, ${r.precioVenta}, '${r.rendimientoUnidad||'unidades'}')"
+>
+<select
+id="porcion-unidad-${r._idx}"
+style="margin-top:0;flex:1;padding:7px 10px;font-size:13px;"
+onchange="calcularPorcion(${r._idx}, ${r.precioVenta}, '${r.rendimientoUnidad||'unidades'}')"
+>
+${r.rendimientoUnidad === 'unidades' || !r.rendimientoUnidad ? `
+<option value="unidades">Unidades</option>
+` : (r.rendimientoUnidad === 'kg' || r.rendimientoUnidad === 'g') ? `
+<option value="g">Gramos (g)</option>
+<option value="kg">Kilogramos (kg)</option>
+` : `
+<option value="ml">Mililitros (ml)</option>
+<option value="lt">Litros (lt)</option>
+`}
+</select>
+<div id="porcion-resultado-${r._idx}" style="font-weight:700;color:var(--primary);font-size:15px;min-width:70px;text-align:right;">—</div>
+</div>
+</div>
+` : ''}
+</div>
+`).join("")}
+</div>
+`).join("")
+
+
+/* ================= COMBOS ================= */
+
+let comFiltrados=combos
+.map((c,idx)=>({...c,_idx:idx}))
+.filter(c=>{
+let matchNombre=c.nombre.toLowerCase().includes(busqCom)
+let matchCat=!catCom || c.categoria===catCom
+return matchNombre && matchCat
+})
+
+let comAgrupados={}
+comFiltrados.forEach(c=>{
+let cat=c.categoria||"Sin categoría"
+if(!comAgrupados[cat]) comAgrupados[cat]=[]
+comAgrupados[cat].push(c)
+})
+
+listaCombos.innerHTML=Object.keys(comAgrupados).map(cat=>`
+<div class="group-card" style="background:${colorCategoria(cat)}">
+<div class="group-title">${cat}</div>
+${comAgrupados[cat].map(c=>`
+<div class="list-item">
+<div>
+<b>${c.nombre}</b><br>
+<span style="color:var(--muted);font-size:13px">Precio: $${c.precio.toFixed(2)} ${c.precioFijo ? "🔒" : ""}</span>
+</div>
+<div>
+<button class="btn-fix" onclick="fijarPrecioCombo(${c._idx})">${c.precioFijo ? "🔓 Desfijar" : "🔒 Fijar"}</button>
+<button class="btn-edit" onclick="editarCombo(${c._idx})">✏️ Editar</button>
+<button class="btn-del" onclick="borrarCombo(${c._idx})">🗑 Borrar</button>
+</div>
+</div>
+`).join("")}
+</div>
+`).join("")
+}
+
+/* ================= CALCULADOR DE PORCIONES ================= */
+
+function calcularPorcion(idx, precioBase, unidadBase){
+let cant = parseFloat(document.getElementById('porcion-cant-'+idx)?.value)
+let unidadPorcion = document.getElementById('porcion-unidad-'+idx)?.value
+let resultado = document.getElementById('porcion-resultado-'+idx)
+
+if(!resultado) return
+
+if(!cant || cant <= 0){
+resultado.innerHTML = "—"
+return
+}
+
+let precio = 0
+
+// Si la receta rinde en unidades, el precio es por unidad
+if(unidadBase === 'unidades' || !unidadBase){
+precio = precioBase * cant
+
+// Conversiones de peso/volumen
+} else if(unidadBase === 'kg'){
+if(unidadPorcion === 'kg')  precio = precioBase * cant
+if(unidadPorcion === 'g')   precio = precioBase * (cant / 1000)
+
+} else if(unidadBase === 'g'){
+if(unidadPorcion === 'g')   precio = precioBase * cant
+if(unidadPorcion === 'kg')  precio = precioBase * (cant * 1000)
+
+} else if(unidadBase === 'lt'){
+if(unidadPorcion === 'lt')  precio = precioBase * cant
+if(unidadPorcion === 'ml')  precio = precioBase * (cant / 1000)
+
+} else if(unidadBase === 'ml'){
+if(unidadPorcion === 'ml')  precio = precioBase * cant
+if(unidadPorcion === 'lt')  precio = precioBase * (cant * 1000)
+
+} else {
+precio = precioBase * cant
+}
+
+resultado.innerHTML = "$" + precio.toFixed(2)
+}
+
+// Arrancar mostrando ingredientes
+show('ingredientes')
+
+// Registrar Service Worker para PWA
+if('serviceWorker' in navigator){
+navigator.serviceWorker.register('sw.js')
+}
+
+</script>
+</body>
+</html>
